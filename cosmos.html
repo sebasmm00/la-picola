@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSMOS — La Frontera del Infinito</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void: #050A14;
+    --deep: #0D1F3C;
+    --nebula: #6B3FA0;
+    --star: #E8F0FF;
+    --gold: #F5C842;
+    --ice: #7BC8F6;
+    --dim: rgba(232,240,255,0.45);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--star);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── STARFIELD ── */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 3rem;
+    background: linear-gradient(to bottom, rgba(5,10,20,0.9), transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--star); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    background: linear-gradient(160deg, #ffffff 0%, #c4d4f5 40%, var(--nebula) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.55s forwards;
+  }
+
+  .hero-sub {
+    margin-top: 2rem;
+    font-size: 1.05rem;
+    color: var(--dim);
+    max-width: 480px;
+    line-height: 1.75;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.05s forwards;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--void);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.2rem;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(245,200,66,0.35);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--star);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.2rem;
+    border: 1px solid rgba(232,240,255,0.25);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover {
+    border-color: var(--star);
+    background: rgba(232,240,255,0.05);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dim);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--dim), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── SOLAR SYSTEM SECTION ── */
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--nebula);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--nebula);
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-body {
+    color: var(--dim);
+    font-size: 1rem;
+    line-height: 1.8;
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  /* ── PLANETS ── */
+  .planets-section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 0 10rem;
+    overflow: hidden;
+  }
+
+  .planets-header {
+    text-align: center;
+    padding: 0 2rem 4rem;
+  }
+
+  .planets-track {
+    display: flex;
+    gap: 0;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 4rem;
+    flex-wrap: wrap;
+    gap: 3rem;
+    row-gap: 4rem;
+  }
+
+  .planet-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .planet-card:hover { transform: translateY(-12px); }
+  .planet-card:hover .planet-name { color: var(--star); }
+
+  .planet-orb {
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset -6px -6px 20px rgba(0,0,0,0.6), inset 4px 4px 15px rgba(255,255,255,0.08);
+    flex-shrink: 0;
+    transition: box-shadow 0.3s;
+  }
+  .planet-card:hover .planet-orb {
+    box-shadow: inset -6px -6px 20px rgba(0,0,0,0.6), inset 4px 4px 15px rgba(255,255,255,0.08), 0 0 40px var(--glow-color, rgba(107,63,160,0.5));
+  }
+
+  .planet-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transition: color 0.2s;
+  }
+
+  .planet-dist {
+    font-size: 0.68rem;
+    color: rgba(232,240,255,0.25);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── STATS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: rgba(232,240,255,0.06);
+    border: 1px solid rgba(232,240,255,0.06);
+    margin: 6rem auto;
+    max-width: 1000px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-cell {
+    background: var(--void);
+    padding: 3rem 2.5rem;
+  }
+
+  .stat-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ── MISSIONS ── */
+  .missions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: rgba(232,240,255,0.06);
+    border: 1px solid rgba(232,240,255,0.06);
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .mission-card {
+    background: var(--void);
+    padding: 2.8rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+  }
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent, var(--nebula));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .mission-card:hover::before { transform: scaleX(1); }
+  .mission-card:hover { background: rgba(13,31,60,0.6); }
+
+  .mission-year {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    color: var(--accent, var(--nebula));
+    margin-bottom: 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .mission-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.01em;
+  }
+
+  .mission-desc {
+    font-size: 0.88rem;
+    color: var(--dim);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .mission-status {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(232,240,255,0.15);
+    border-radius: 1px;
+    color: var(--dim);
+  }
+
+  /* ── QUOTE ── */
+  .quote-section {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 10rem 3rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .quote-mark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 6rem;
+    line-height: 0;
+    color: var(--nebula);
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 2rem;
+  }
+
+  .quote-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    color: var(--star);
+  }
+
+  .quote-author {
+    margin-top: 2.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(232,240,255,0.06);
+    padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .footer-note {
+    font-size: 0.72rem;
+    color: rgba(232,240,255,0.2);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    position: relative;
+    z-index: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(232,240,255,0.08), transparent);
+    margin: 0 3rem;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .planet-orb { animation: float var(--float-dur, 6s) ease-in-out infinite; }
+
+  /* ── REVEAL ON SCROLL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .section { padding: 5rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+    .stats-grid { margin: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<nav>
+  <div class="nav-logo">Cosmos</div>
+  <ul class="nav-links">
+    <li><a href="#sistema">Sistema Solar</a></li>
+    <li><a href="#misiones">Misiones</a></li>
+    <li><a href="#datos">Datos</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Exploración del espacio profundo</p>
+  <h1 class="hero-title">EL UNIVERSO<br>TE ESPERA</h1>
+  <p class="hero-sub">4.500 millones de años de historia cósmica, condensados en una sola pregunta: ¿qué hay más allá de lo que podemos ver?</p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="document.getElementById('sistema').scrollIntoView({behavior:'smooth'})">Explorar ahora</button>
+    <a href="#misiones" class="btn-ghost">Ver misiones</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Descubrir</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<div class="divider"></div>
+<section class="section reveal" id="sistema">
+  <div class="section-label">Nuestro vecindario</div>
+  <h2 class="section-title">El Sistema Solar<br>en perspectiva</h2>
+  <p class="section-body">Si el Sol fuera del tamaño de una puerta, la Tierra sería una moneda de diez centavos a 26 metros de distancia. Plutón estaría a más de un kilómetro. La escala del cosmos desafía nuestra intuición a cada paso.</p>
+</section>
+
+<!-- PLANETS -->
+<section class="planets-section" id="planetas">
+  <div class="planets-header reveal">
+    <div class="section-label" style="justify-content:center">8 mundos</div>
+    <h2 class="section-title">Nuestros vecinos</h2>
+  </div>
+  <div class="planets-track reveal">
+
+    <div class="planet-card" style="--glow-color: rgba(160,140,100,0.5)">
+      <div class="planet-orb" style="width:38px;height:38px;background:radial-gradient(circle at 35% 35%, #c8b87a, #7a6540);--float-dur:5s"></div>
+      <span class="planet-name">Mercurio</span>
+      <span class="planet-dist">0.39 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(220,170,80,0.5)">
+      <div class="planet-orb" style="width:60px;height:60px;background:radial-gradient(circle at 35% 35%, #f0d080, #c8820a);--float-dur:7s"></div>
+      <span class="planet-name">Venus</span>
+      <span class="planet-dist">0.72 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(50,100,200,0.5)">
+      <div class="planet-orb" style="width:64px;height:64px;background:radial-gradient(circle at 35% 35%, #6ba3e8, #1a4a90, #2d7a3a);--float-dur:9s"></div>
+      <span class="planet-name">Tierra</span>
+      <span class="planet-dist">1.00 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(200,80,50,0.5)">
+      <div class="planet-orb" style="width:52px;height:52px;background:radial-gradient(circle at 35% 35%, #e87050, #922810);--float-dur:6s"></div>
+      <span class="planet-name">Marte</span>
+      <span class="planet-dist">1.52 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(180,140,80,0.5)">
+      <div class="planet-orb" style="width:130px;height:130px;background:radial-gradient(circle at 35% 35%, #e8d09a, #c8a060, #9a7040);--float-dur:11s;position:relative">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(75deg);width:180px;height:180px;border-radius:50%;border:8px solid rgba(200,160,80,0.4);pointer-events:none"></div>
+      </div>
+      <span class="planet-name">Júpiter</span>
+      <span class="planet-dist">5.20 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(200,180,120,0.5)">
+      <div class="planet-orb" style="width:110px;height:110px;background:radial-gradient(circle at 35% 35%, #f0e0b0, #d4b870, #a08040);--float-dur:13s;position:relative">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(80deg);width:200px;height:200px;border-radius:50%;border:12px solid rgba(210,180,100,0.35);pointer-events:none"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(80deg);width:160px;height:160px;border-radius:50%;border:6px solid rgba(210,180,100,0.2);pointer-events:none"></div>
+      </div>
+      <span class="planet-name">Saturno</span>
+      <span class="planet-dist">9.58 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(100,180,220,0.5)">
+      <div class="planet-orb" style="width:80px;height:80px;background:radial-gradient(circle at 35% 35%, #a0d8f0, #4090b8, #204868);--float-dur:15s"></div>
+      <span class="planet-name">Urano</span>
+      <span class="planet-dist">19.2 UA</span>
+    </div>
+
+    <div class="planet-card" style="--glow-color: rgba(60,100,200,0.5)">
+      <div class="planet-orb" style="width:78px;height:78px;background:radial-gradient(circle at 35% 35%, #6080e8, #3050c0, #102080);--float-dur:17s"></div>
+      <span class="planet-name">Neptuno</span>
+      <span class="planet-dist">30.1 UA</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-grid reveal" id="datos">
+  <div class="stat-cell">
+    <div class="stat-number">2 × 10<sup style="font-size:0.5em">30</sup></div>
+    <div class="stat-label">Kilogramos de masa del Sol — 99.8% de todo el Sistema Solar</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">2.000+</div>
+    <div class="stat-label">Exoplanetas confirmados con posible zona habitable descubiertos hasta 2025</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">13.800M</div>
+    <div class="stat-label">Años de antigüedad del universo observable desde el Big Bang</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">300.000</div>
+    <div class="stat-label">Km/s — velocidad de la luz, el límite que todo lo define</div>
+  </div>
+</div>
+
+<!-- MISSIONS -->
+<section class="section reveal" style="max-width:1100px" id="misiones">
+  <div class="section-label">Lo que hemos enviado ahí afuera</div>
+  <h2 class="section-title" style="margin-bottom:3rem">Misiones que<br>cambiaron todo</h2>
+  <div class="missions-grid">
+
+    <div class="mission-card" style="--accent:#F5C842">
+      <div class="mission-year">1969</div>
+      <div class="mission-title">Apollo 11</div>
+      <div class="mission-desc">El 20 de julio, Neil Armstrong y Buzz Aldrin posaron los pies en la Luna. Doce seres humanos han caminado sobre otro mundo. Hasta ahora.</div>
+      <span class="mission-status" style="border-color:rgba(245,200,66,0.3);color:#F5C842">Completada</span>
+    </div>
+
+    <div class="mission-card" style="--accent:#7BC8F6">
+      <div class="mission-year">1977</div>
+      <div class="mission-title">Voyager 1 & 2</div>
+      <div class="mission-desc">Lanzadas hace casi 50 años, ambas sondas viajan aún a través del espacio interestelar. Voyager 1 es el objeto humano más lejano del cosmos.</div>
+      <span class="mission-status" style="border-color:rgba(123,200,246,0.3);color:#7BC8F6">En curso</span>
+    </div>
+
+    <div class="mission-card" style="--accent:#a78bfa">
+      <div class="mission-year">2021</div>
+      <div class="mission-title">James Webb</div>
+      <div class="mission-desc">El telescopio más potente jamás construido observa el universo en infrarrojo, revelando galaxias de hace 13.500 millones de años con resolución sin precedentes.</div>
+      <span class="mission-status" style="border-color:rgba(167,139,250,0.3);color:#a78bfa">Operacional</span>
+    </div>
+
+    <div class="mission-card" style="--accent:#f87171">
+      <div class="mission-year">2024</div>
+      <div class="mission-title">Artemis III</div>
+      <div class="mission-desc">La primera misión en devolver humanos a la Luna desde 1972. Esta vez, el objetivo es el Polo Sur lunar — y el horizonte marte está más cerca que nunca.</div>
+      <span class="mission-status" style="border-color:rgba(248,113,113,0.3);color:#f87171">En preparación</span>
+    </div>
+
+    <div class="mission-card" style="--accent:#34d399">
+      <div class="mission-year">2031</div>
+      <div class="mission-title">JUICE — Júpiter</div>
+      <div class="mission-desc">La ESA envía una sonda para explorar las lunas heladas de Júpiter: Europa, Ganimedes y Calisto. Océanos bajo el hielo. Posible vida. Respuestas pendientes.</div>
+      <span class="mission-status" style="border-color:rgba(52,211,153,0.3);color:#34d399">Lanzada</span>
+    </div>
+
+    <div class="mission-card" style="--accent:#fb923c">
+      <div class="mission-year">2040s</div>
+      <div class="mission-title">Humanos en Marte</div>
+      <div class="mission-desc">El planeta rojo. 225 millones de kilómetros. Un viaje de nueve meses. El sueño más ambicioso de la humanidad: convertirnos en especie multiplanetaria.</div>
+      <span class="mission-status" style="border-color:rgba(251,146,60,0.3);color:#fb923c">Horizonte</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section reveal">
+  <span class="quote-mark">"</span>
+  <p class="quote-text">El cosmos es todo lo que es, todo lo que fue y todo lo que alguna vez será. Nuestras más pequeñas contemplaciones del cosmos nos emocionan.</p>
+  <p class="quote-author">— Carl Sagan, Cosmos (1980)</p>
+</section>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="footer-logo">Cosmos</div>
+  <div class="footer-note">Una ventana al universo · Creado con curiosidad infinita</div>
+</footer>
+
+<script>
+// ── STARFIELD ──
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initStars(n = 320) {
+  stars = Array.from({length: n}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.4 + 0.2,
+    o: Math.random() * 0.7 + 0.2,
+    speed: Math.random() * 0.3 + 0.05,
+    twinkle: Math.random() * Math.PI * 2,
+  }));
+}
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, W, H);
+  stars.forEach(s => {
+    s.twinkle += s.speed * 0.02;
+    const opacity = s.o * (0.6 + 0.4 * Math.sin(s.twinkle));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,240,255,${opacity})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+resize();
+initStars();
+window.addEventListener('resize', () => { resize(); initStars(); });
+requestAnimationFrame(drawStars);
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
